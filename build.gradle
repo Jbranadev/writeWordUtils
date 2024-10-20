@@ -1,19 +1,213 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'jacoco' // Agrega el plugin de JaCoCo
+    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
 group = 'io.github.josecarlosbran'
-version = '1.0'
+version = '0.1'
 
+//Publicación en maven
+// ./gradlew clean build javadocJar sourcesJar publish
+//Publicación local
+//./gradlew clean build javadocJar sourcesJar publishToMavenLocal
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Dependencia para TestNG
+    testImplementation 'org.testng:testng:7.10.2'
+    // Dependencia para ReporteTestNG
+    testImplementation 'com.github.sdrss:reportng:2.7.0'
+    //Dependencia para no escribir getters y setters
+    implementation 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    //Utilidades Estandar desarrolladas por la Apache Fundation
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-compress:1.27.1'
+    implementation 'io.github.josecarlosbran:logsjbsupport:1.0.8'
+    implementation 'commons-io:commons-io:2.17.0'
+    implementation 'commons-codec:commons-codec:1.17.1'
 }
 
-test {
-    useJUnitPlatform()
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
+
+javadoc {
+    options {
+        encoding 'UTF-8'
+        links 'https://docs.oracle.com/javase/8/docs/api/'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+tasks.register('javadocJar', Jar) {
+    archiveClassifier.set('javadoc')
+    from tasks.javadoc
+}
+tasks.register('sourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+tasks.named('publish') {
+    dependsOn 'javadocJar', 'sourcesJar'
+}
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+
+test {
+    useTestNG()
+    finalizedBy jacocoTestReport // Genera el reporte de JaCoCo después de las pruebas
+    ignoreFailures = true
+    testLogging {
+        events "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+
+    afterSuite { desc, result ->
+        if (!desc.parent) { // Solo para el suite principal
+            def totalTests = result.testCount
+            def failedTests = result.failedTestCount
+            if (totalTests > 0) {
+                def failurePercentage = (failedTests / totalTests) * 100
+
+                if (failurePercentage > 20) {
+                    throw new GradleException("Más del 20% de los tests fallaron. Fallos: ${failedTests}, Total: ${totalTests}")
+                }
+            }
+
+        }
+    }
+
+}
+jacocoTestReport {
+    reports {
+        xml.required = true // Genera el reporte en formato XML
+        html.required = true // También puedes mantener el HTML si lo necesitas
+    }
+}
+
+// Define the sourceJar task
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'seleniumutils'
+            from components.java
+            // Añade los artefactos javadoc y sources
+            artifact(tasks.named('javadocJar'))
+            artifact(tasks.named('sourcesJar'))
+            //artifact sourceJar
+            pom {
+                name = 'seleniumutils'
+                description = 'Utilidades de Selenium'
+                url = 'https://github.com/Jbranadev/SeleniumUtils'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'mlemus'
+                        name = 'Mauricio Lemus'
+                        email = 'rodlemus03@gmail.com'
+                    }
+                    developer {
+                        id = 'jbran'
+                        name = 'Jose Bran'
+                        email = 'jbranadev@gmail.com'
+                    }
+                    developer {
+                        id = 'jcornejo'
+                        name = 'Jose Cornejo'
+                        email = 'gabrielvalenzuela1996@gmail.com'
+                    }
+                    developer {
+                        id = 'mdleon'
+                        name = 'Mayron de Leon'
+                        email = 'mayofito@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Jbranadev/SeleniumUtils.git'
+                    developerConnection = 'scm:git:ssh://github.com:Jbranadev/SeleniumUtils.git'
+                    url = 'https://github.com/Jbranadev/SeleniumUtils'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'local'
+            url = uri("${project.rootDir}/repo")
+        }
+        maven {
+            name = 'mavenCentral'
+            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
+            credentials {
+                username = System.getenv("USER_NAME")
+                password = System.getenv("DEPLOY_ACTIONS_GITHUB")
+            }
+        }
+    }
+}
+
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            stagingProfileId = '2b684156014a8'
+            username = System.getenv("OSSRH_USERNAME")
+            password = System.getenv("OSSRH_TOKEN")
+        }
+    }
+    connectTimeout = Duration.ofMinutes(5)
+    clientTimeout = Duration.ofMinutes(10)
+}
+
+
