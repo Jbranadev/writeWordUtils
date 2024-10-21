@@ -76,12 +76,12 @@ public class writeWordUtils {
     }
 
     public static XWPFDocument writeTitleDoc(XWPFDocument doc
-            , BreakType breakType, String title, String color, int size, boolean isBold) throws ExecutionException, InterruptedException {
+            , BreakType breakType, String title, String color, Integer size, Boolean isBold) throws ExecutionException, InterruptedException {
         return writeWordUtils.writeTitleDocCompleteableFuture(doc, breakType, title, color, size, isBold).get();
     }
 
     public static CompletableFuture<XWPFDocument> writeTitleDocCompleteableFuture(XWPFDocument doc
-            , BreakType breakType, String title, String color, int size, boolean isBold) {
+            , BreakType breakType, String title, String color, Integer size, Boolean isBold) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 /****Agregamos el nuevo contenido****/
@@ -102,12 +102,20 @@ public class writeWordUtils {
         });
     }
 
-    public static XWPFRun writeTextRun(XWPFRun run, String text, String color, int size, boolean isBold) {
+    public static XWPFRun writeTextRun(XWPFRun run, String text, String color, Integer size, Boolean isBold) {
         try {
-            run.setColor(color);
-            run.setFontSize(size);
-            run.setBold(isBold);
-            run.setText(text);
+            if(!Objects.isNull(color)){
+                run.setColor(color);
+            }
+            if(!Objects.isNull(size)){
+                run.setFontSize(size);
+            }
+            if(!Objects.isNull(isBold)){
+                run.setBold(isBold);
+            }
+            if(!Objects.isNull(text)){
+                run.setText(text);
+            }
         } catch (Exception e) {
             LogsJB.error("Error inesperado al agregar el texto al documento de evidencia: " + text + " " + ExceptionUtils.getStackTrace(e));
         } finally {
@@ -116,14 +124,14 @@ public class writeWordUtils {
     }
 
     public static XWPFDocument writeImageDoc(XWPFDocument doc, String imageRoute, String title,
-                                             BreakType breakType, int spacinBefore, String color, int size, boolean isBold,
-                                             int widthImage, int heightImage) throws ExecutionException, InterruptedException {
+                                             BreakType breakType, Integer spacinBefore, String color, Integer size, Boolean isBold,
+                                             Integer widthImage, Integer heightImage) throws ExecutionException, InterruptedException {
         return writeImageDocCompleteableFuture(doc, imageRoute, title, breakType, spacinBefore, color, size, isBold, widthImage, heightImage).get();
     }
 
     public static CompletableFuture<XWPFDocument> writeImageDocCompleteableFuture(XWPFDocument doc, String imageRoute, String title,
-                                                                                  BreakType breakType, int spacinBefore, String color, int size, boolean isBold,
-                                                                                  int widthImage, int heightImage) {
+                                                                                  BreakType breakType, Integer spacinBefore, String color, Integer size, Boolean isBold,
+                                                                                  Integer widthImage, Integer heightImage) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 //Verificamos si es la primera vez que se escribira el documento
@@ -161,11 +169,11 @@ public class writeWordUtils {
         });
     }
 
-    public static XWPFDocument writeTextDoc(XWPFDocument doc, String text, String color, int size, boolean isBold) throws ExecutionException, InterruptedException {
+    public static XWPFDocument writeTextDoc(XWPFDocument doc, String text, String color, Integer size, Boolean isBold) throws ExecutionException, InterruptedException {
         return writeTextDocCompleteableFuture(doc, text, color, size, isBold).get();
     }
 
-    public static CompletableFuture<XWPFDocument> writeTextDocCompleteableFuture(XWPFDocument doc, String text, String color, int size, boolean isBold) {
+    public static CompletableFuture<XWPFDocument> writeTextDocCompleteableFuture(XWPFDocument doc, String text, String color, Integer size, Boolean isBold) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 //Agregamos el nuevo contenido
