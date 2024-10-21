@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'jacoco' // Agrega el plugin de JaCoCo
-    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+//    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
 group = 'io.github.josecarlosbran'
@@ -31,6 +31,11 @@ dependencies {
     implementation 'io.github.josecarlosbran:logsjbsupport:1.0.8'
     implementation 'commons-io:commons-io:2.17.0'
     implementation 'commons-codec:commons-codec:1.17.1'
+
+
+    //Dependencias para el manejo de archivos Excel y Word, acceso a Data Providers y Documentación.
+    implementation 'org.apache.poi:poi:5.2.5'
+    implementation 'org.apache.poi:poi-ooxml:5.3.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -111,14 +116,14 @@ task sourceJar(type: Jar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'seleniumutils'
+            artifactId = 'writewordutils'
             from components.java
             // Añade los artefactos javadoc y sources
             artifact(tasks.named('javadocJar'))
             artifact(tasks.named('sourcesJar'))
             //artifact sourceJar
             pom {
-                name = 'seleniumutils'
+                name = 'writewordutils'
                 description = 'Utilidades de Selenium'
                 url = 'https://github.com/Jbranadev/SeleniumUtils'
                 licenses {
@@ -162,32 +167,32 @@ publishing {
             name = 'local'
             url = uri("${project.rootDir}/repo")
         }
-        maven {
-            name = 'mavenCentral'
-            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_TOKEN")
-            }
-        }
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
-            credentials {
-                username = System.getenv("USER_NAME")
-                password = System.getenv("DEPLOY_ACTIONS_GITHUB")
-            }
-        }
+//        maven {
+//            name = 'mavenCentral'
+//            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            credentials {
+//                username = System.getenv("OSSRH_USERNAME")
+//                password = System.getenv("OSSRH_TOKEN")
+//            }
+//        }
+//        maven {
+//            name = "GitHubPackages"
+//            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
+//            credentials {
+//                username = System.getenv("USER_NAME")
+//                password = System.getenv("DEPLOY_ACTIONS_GITHUB")
+//            }
+//        }
     }
 }
 
-
-signing {
-    def signingKey = findProperty("signingKey")
-    def signingPassword = findProperty("signingPassword")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign publishing.publications.mavenJava
-}
+//
+//signing {
+//    def signingKey = findProperty("signingKey")
+//    def signingPassword = findProperty("signingPassword")
+//    useInMemoryPgpKeys(signingKey, signingPassword)
+//    sign publishing.publications.mavenJava
+//}
 
 
 javadoc {
@@ -195,19 +200,19 @@ javadoc {
         options.addBooleanOption('html5', true)
     }
 }
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            stagingProfileId = '2b684156014a8'
-            username = System.getenv("OSSRH_USERNAME")
-            password = System.getenv("OSSRH_TOKEN")
-        }
-    }
-    connectTimeout = Duration.ofMinutes(5)
-    clientTimeout = Duration.ofMinutes(10)
-}
+//
+//nexusPublishing {
+//    repositories {
+//        sonatype {
+//            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+//            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+//            stagingProfileId = '2b684156014a8'
+//            username = System.getenv("OSSRH_USERNAME")
+//            password = System.getenv("OSSRH_TOKEN")
+//        }
+//    }
+//    connectTimeout = Duration.ofMinutes(5)
+//    clientTimeout = Duration.ofMinutes(10)
+//}
 
 
