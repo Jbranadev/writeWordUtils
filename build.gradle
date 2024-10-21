@@ -124,8 +124,8 @@ publishing {
             //artifact sourceJar
             pom {
                 name = 'writewordutils'
-                description = 'Utilidades de Selenium'
-                url = 'https://github.com/Jbranadev/SeleniumUtils'
+                description = 'Utilidades de Word, Excel y Data Providers'
+                url = 'https://github.com/Jbranadev/writeWordUtils'
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
@@ -155,9 +155,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/Jbranadev/SeleniumUtils.git'
-                    developerConnection = 'scm:git:ssh://github.com:Jbranadev/SeleniumUtils.git'
-                    url = 'https://github.com/Jbranadev/SeleniumUtils'
+                    connection = 'scm:git:git://github.com/Jbranadev/writeWordUtils.git'
+                    developerConnection = 'scm:git:ssh://github.com:Jbranadev/writeWordUtils.git'
+                    url = 'https://github.com/Jbranadev/writeWordUtils'
                 }
             }
         }
@@ -177,7 +177,7 @@ publishing {
         }
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
+            url = "https://maven.pkg.github.com/Jbranadev/writeWordUtils"
             credentials {
                 username = System.getenv("USER_NAME")
                 password = System.getenv("DEPLOY_ACTIONS_GITHUB")
