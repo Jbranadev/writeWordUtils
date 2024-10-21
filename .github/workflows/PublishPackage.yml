@@ -1,0 +1,45 @@
+name: Publish package to GitHub Packages
+on:
+  workflow_dispatch:
+  release:
+    types: [ published ]
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      #Publicamos en GithubPackages
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v3.6.0
+        #Seteamos la version de Java
+      - name: Set up JDK 21
+        uses: actions/setup-java@b36c23c0d998641eff861008f374ee103c25ac73 # v4.4.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      #Limpiamos la cache de Gradle
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Publish to Maven Central
+        run: ./gradlew clean build javadocJar sourcesJar publish closeAndReleaseRepository
+        env:
+          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGN_KEY_PASS }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          USER_NAME: ${{ secrets.USER_NAME }}
+          DEPLOY_ACTIONS_GITHUB: ${{ secrets.DEPLOY_ACTIONS_GITHUB }}
+

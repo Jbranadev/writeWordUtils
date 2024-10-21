@@ -3,11 +3,11 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'jacoco' // Agrega el plugin de JaCoCo
-//    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
 group = 'io.github.josecarlosbran'
-version = '0.1'
+version = '1.0'
 
 //Publicación en maven
 // ./gradlew clean build javadocJar sourcesJar publish
@@ -167,32 +167,32 @@ publishing {
             name = 'local'
             url = uri("${project.rootDir}/repo")
         }
-//        maven {
-//            name = 'mavenCentral'
-//            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-//            credentials {
-//                username = System.getenv("OSSRH_USERNAME")
-//                password = System.getenv("OSSRH_TOKEN")
-//            }
-//        }
-//        maven {
-//            name = "GitHubPackages"
-//            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
-//            credentials {
-//                username = System.getenv("USER_NAME")
-//                password = System.getenv("DEPLOY_ACTIONS_GITHUB")
-//            }
-//        }
+        maven {
+            name = 'mavenCentral'
+            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/Jbranadev/SeleniumUtils"
+            credentials {
+                username = System.getenv("USER_NAME")
+                password = System.getenv("DEPLOY_ACTIONS_GITHUB")
+            }
+        }
     }
 }
 
-//
-//signing {
-//    def signingKey = findProperty("signingKey")
-//    def signingPassword = findProperty("signingPassword")
-//    useInMemoryPgpKeys(signingKey, signingPassword)
-//    sign publishing.publications.mavenJava
-//}
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
 
 
 javadoc {
@@ -200,19 +200,19 @@ javadoc {
         options.addBooleanOption('html5', true)
     }
 }
-//
-//nexusPublishing {
-//    repositories {
-//        sonatype {
-//            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-//            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-//            stagingProfileId = '2b684156014a8'
-//            username = System.getenv("OSSRH_USERNAME")
-//            password = System.getenv("OSSRH_TOKEN")
-//        }
-//    }
-//    connectTimeout = Duration.ofMinutes(5)
-//    clientTimeout = Duration.ofMinutes(10)
-//}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            stagingProfileId = '2b684156014a8'
+            username = System.getenv("OSSRH_USERNAME")
+            password = System.getenv("OSSRH_TOKEN")
+        }
+    }
+    connectTimeout = Duration.ofMinutes(5)
+    clientTimeout = Duration.ofMinutes(10)
+}
 
 

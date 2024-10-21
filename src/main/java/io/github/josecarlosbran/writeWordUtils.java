@@ -16,7 +16,6 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 public class writeWordUtils {
-
     public static XWPFDocument initDoc(String ruta, InputStream plantilla) {
         XWPFDocument doc = null;
         try {
@@ -89,7 +88,7 @@ public class writeWordUtils {
                 XWPFParagraph para = doc.createParagraph();
                 para.setAlignment(ParagraphAlignment.CENTER);
                 XWPFRun run = para.createRun();
-                if(!Objects.isNull(breakType)){
+                if (!Objects.isNull(breakType)) {
                     run.addBreak(breakType);
                 }
                 writeWordUtils.writeTextRun(run, title, color, size, isBold);
@@ -104,16 +103,16 @@ public class writeWordUtils {
 
     public static XWPFRun writeTextRun(XWPFRun run, String text, String color, Integer size, Boolean isBold) {
         try {
-            if(!Objects.isNull(color)){
+            if (!Objects.isNull(color)) {
                 run.setColor(color);
             }
-            if(!Objects.isNull(size)){
+            if (!Objects.isNull(size)) {
                 run.setFontSize(size);
             }
-            if(!Objects.isNull(isBold)){
+            if (!Objects.isNull(isBold)) {
                 run.setBold(isBold);
             }
-            if(!Objects.isNull(text)){
+            if (!Objects.isNull(text)) {
                 run.setText(text);
             }
         } catch (Exception e) {
