@@ -89,7 +89,9 @@ public class writeWordUtils {
                 XWPFParagraph para = doc.createParagraph();
                 para.setAlignment(ParagraphAlignment.CENTER);
                 XWPFRun run = para.createRun();
-                run.addBreak(breakType);
+                if(!Objects.isNull(breakType)){
+                    run.addBreak(breakType);
+                }
                 writeWordUtils.writeTextRun(run, title, color, size, isBold);
             } catch (Exception e) {
                 LogsJB.error("Excepcion capturada al escribir el Titulo del Documento" + ExceptionUtils.getStackTrace(e));
